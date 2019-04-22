@@ -88,9 +88,9 @@ def map(query):
     latitude = response.geojson()['features'][0]['center'][0]
     longitude = response.geojson()['features'][0]['center'][1]
     truncated_address = textwrap.shorten(first['place_name'], width=60, placeholder="...")
-    trips = Trip.select().order_by(Trip.created_at.desc())
+    trips = Trip.select().order_by(Trip.created_at.asc())
 
-    return render_template('map.html', truncated_address=truncated_address, response=response, latitude=latitude, longitude=longitude, first=first, trips=trips)
+    return render_template('map.html', query=query, truncated_address=truncated_address, response=response, latitude=latitude, longitude=longitude, first=first, trips=trips)
 
 @app.route('/save_location/<query>', methods=['POST'])
 def save_location(query):
@@ -101,15 +101,37 @@ def save_location(query):
     address = first['place_name']
     ## just made a simple one model DB to test this out
     new_event = Trip(longitude=longitude, latitude=latitude, address=address)
-
     if new_event.save():
         print('Successfully Saved Trip to DB')
         return redirect(url_for('map', query=query, first=first))
     else:
         print('Failed to Save')
         return redirect(url_for('map', query=query, first=first))
+
+# All saved addresses should have a button. This button should take them
+# to the location, on the map.
+
+@app.route('/show_location/<query>', methods=['GET'])
+def show_location(query):
+    pass
+    # breakpoint()
+    # forward = geocoder.reverse(query)
+    # latitude = response.geojson()['features'][0]['geometry']['coordinates'][1]
+    # longitude = response.geojson()['features'][0]['geometry']['coordinates'][0]
+    # response = geocoder.reverse(latitude, longitude)
+    # reverse.geojson()['features'][0]['place_name']
+
+    # print('hello')
+
+    ### References ###
+    # Latitude = -90 to 90
+    # reverse.geojson()['features'][0]['place_name']
+    # reverse.geojson()['features'][0]['id']
+    # reverse.geojson()['features'][0]['geometry']['coordinates']
+
+
+
+
+
     
-
-
-
 
