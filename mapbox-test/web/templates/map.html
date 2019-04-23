@@ -8,7 +8,7 @@
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
-        #map { position:absolute; top:0; bottom:0; width:500px; height:500px; }
+        #map { position:absolute; top:0; bottom:0; width:800px; height:800px; }
     </style>
 </head>
 <body>
@@ -39,39 +39,48 @@
         <p>Longitude: {{ trip.longitude }}</p>
         <p>Latitude: {{ trip.latitude }}</p>
         <p>Address: {{ trip.address }}</p>
-        <button onClick="flyTo({{ trip.latitude }}, {{ trip.longitude }}); addMarker({{ trip.latitude}}, {{ trip.longitude }})" id='fly'>Fly me There</button>
+        <button onClick="flyTo({{ trip.latitude }}, {{ trip.longitude }})" class='fly'>Fly me There</button>
         <hr>
-        <script>
-            
-        </script>
     {% endfor %}
+    <script>
+        function flyTo(latitude,longitude) {
+            map.flyTo({
+                center: [latitude,longitude],
+                zoom: 17.5,
+                speed: 2
+            });
+            let marker = new mapboxgl.Marker()
+            marker.setLngLat([latitude, longitude])
+            marker.addTo(map);
+        }
+    </script>
 
 </div>
 {% if latitude and longitude %}
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3V6dWtpc3RldmVuIiwiYSI6ImNqdWpwcDhhYzFuczE0ZXAzamNkMWpvd2sifQ.PAW2yuz30KwTEL983iIN_g';
-        var coordinates = document.getElementById('coordinates');
-        var map = new mapboxgl.Map({
-        container: 'map', // container id
-        style: 'mapbox://styles/mapbox/dark-v9', // stylesheet location
-        center: [{{ latitude }}, {{ longitude }}], // starting position [lng, lat]
-        zoom: 17.5 // starting zoom
+        let coordinates = document.getElementById('coordinates');
+        let map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/mapbox/dark-v9', // stylesheet location
+            center: [{{ latitude }}, {{ longitude }}], // starting position [lng, lat]
+            zoom: 17.5 // starting zoom
         });
 
-        var marker = new mapboxgl.Marker({
+        let marker = new mapboxgl.Marker({
             draggable: true
         })
             .setLngLat([{{ latitude }}, {{ longitude }}])
             .addTo(map);
         
         function onDragEnd() {
-            var lngLat = marker.getLngLat();
+            let lngLat = marker.getLngLat();
             coordinates.style.display = 'block';
             coordinates.innerHTML = 'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
             return lngLat.lng, lngLat.lat
         }
         
-        marker.on('dragend', onDragEnd);
+        // marker.on('dragend', onDragEnd);
 
         map.on('mousemove', function (e) {
             document.getElementById('info').innerHTML =
@@ -83,22 +92,22 @@
             });
         
         function addMarker(latitude, longitude) {
-            var mapMarker = new mapboxgl.Marker({
+            let mapMarker = new mapboxgl.Marker({
                 draggable: true
             })
                 .setLngLat([{{ latitude }}, {{ longitude }}])
                 .addTo(map);
                 console.log(mapMarker.getLngLat())
                 console.log(mapboxgl.Marker)   
-        }  
+        }
     </script>
 
 {% else %}
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3V6dWtpc3RldmVuIiwiYSI6ImNqdWpwcDhhYzFuczE0ZXAzamNkMWpvd2sifQ.PAW2yuz30KwTEL983iIN_g';
-            var coordinates = document.getElementById('coordinates');
-            var map = new mapboxgl.Map({
+            let coordinates = document.getElementById('coordinates');
+            let map = new mapboxgl.Map({
                 container: 'map', // container id
                 style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
                 center: [101.629845, 3.134673], // starting position [lng, lat]
@@ -116,7 +125,7 @@
 
 
             /* Map: This represents the map on the page. */
-            var map = new mapboxgl.Map({
+            let map = new mapboxgl.Map({
                 container: "map",
                 style: "mapbox://styles/mapbox/light-v10",
                 zoom: 4.62,
@@ -159,14 +168,8 @@
 
 {% endif %}
 
-<script>
-    function flyTo(longitude,latitude) {
-        map.flyTo({
-            center: [longitude,latitude],
-            zoom: 17.5
-        });
-    }
-</script>
+
+
 
 </body>
 </html>
